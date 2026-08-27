@@ -839,7 +839,7 @@ docs/project-report.pdf
 
 This project was developed collaboratively by:
 
-* **[@YOUR_GITHUB_USERNAME](https://github.com/SMousavi7)**
-* **[@TEAMMATE_GITHUB_USERNAME](https://github.com/MilladAnsari)**
+* **[@SMousavi7](https://github.com/SMousavi7)**
+* **[@MilladAnsari](https://github.com/MilladAnsari)**
 
 Developed as part of an **Internet of Things** course project focusing on smart building automation, KNX, IoT platforms, MCP, and AIoT.
