@@ -1,0 +1,74 @@
+{
+  "client": {
+    "type": "TUNNELING",
+    "addressFormat": "LONG",
+    "localPort": 0,
+    "gatewayIp": "127.0.0.1",
+    "gatewayPort": 3671,
+    "autoReconnect": true,
+    "autoReconnectWait": 3,
+    "gatewaysScanner": {
+      "enabled": false
+    }
+  },
+  "devices": [
+    {
+      "deviceInfo": {
+        "deviceNameDataType": "string",
+        "deviceNameExpressionSource": "constant",
+        "deviceNameExpression": "KNX Smart Home",
+        "deviceProfileDataType": "none",
+        "deviceProfileExpressionSource": "constant",
+        "deviceProfileNameExpression": "default"
+      },
+      "pollPeriod": 3000,
+      "attributes": [],
+      "timeseries": [
+        {
+          "type": "9.001",
+          "key": "roomTemperature",
+          "groupAddress": "0/0/7"
+        },
+        { "type": "1.001",
+          "key": "lightState",
+          "groupAddress": "0/0/2"
+        },
+        {
+          "type": "5.001",
+          "key": "blindPosition",
+          "groupAddress": "0/0/5"
+        }
+      ]
+    }
+  ],
+  "poolPeriod": 3000,
+  "attributeUpdates": [],
+  "serverSideRpc": [
+    {
+      "requestType": "write",
+      "deviceNameFilter": "^KNX Smart Home$",
+      "method": "setLight",
+      "dataType": "1.001",
+      "groupAddress": "0/0/1"
+    },
+    {
+      "requestType": "write",
+      "deviceNameFilter": "^KNX Smart Home$",
+      "method": "moveBlind",
+      "dataType": "1.008",
+      "groupAddress": "0/0/3"
+    },
+    {
+      "requestType": "write",
+      "deviceNameFilter": "^KNX Smart Home$",
+      "method": "stopBlind",
+      "dataType": "1.007",
+      "groupAddress": "0/0/4"
+    }
+  ],
+  "name": "my-knx-gateway",
+  "id": "d1c9cdf7-d49c-44e6-9afd-5d887f705818",
+  "logLevel": "DEBUG",
+  "enableRemoteLogging": false,
+  "configVersion": "3.8.3"
+}
