@@ -2,78 +2,121 @@
 
 A smart home IoT system integrating **KNX**, **ThingsBoard**, **MCP**, and a local **Ollama LLM** for real-time monitoring, device control, and Persian natural-language interaction.
 
-The project implements a simulated KNX smart home, connects it to ThingsBoard through a locally deployed and customized ThingsBoard IoT Gateway, and provides an AI assistant capable of monitoring and controlling the smart home through natural-language commands.
+The project implements a simulated KNX smart home, connects it to ThingsBoard through a locally deployed and customized ThingsBoard IoT Gateway, and extends the system with an AI assistant capable of monitoring and controlling the smart home through natural-language commands.
 
 ## Features
 
 * KNX-based smart home simulation
 * Smart light control and status monitoring
-* Motorized blind control and position monitoring
+* Motorized curtain control and position monitoring
 * Real-time room temperature monitoring
 * ThingsBoard telemetry and RPC integration
-* Web-based ThingsBoard dashboard
+* Responsive ThingsBoard dashboard for real-time monitoring and control
+* Web and mobile access to smart-home telemetry and controls
+* Bidirectional synchronization between ThingsBoard and KNX Virtual
 * ThingsBoard IoT Gateway with KNX connector
 * Custom modification of the ThingsBoard KNX uplink converter
-* ETS6 project configuration
-* KNX Virtual simulation configuration
+* ETS6 project configuration included
+* KNX Virtual simulation files included
 * Local MCP server for exposing smart-home operations to AI
 * Local Ollama LLM
 * Persian natural-language interaction
-* AI-based light control and home status queries
+* AI-based light control and home-status queries
+
+---
+
+## Dashboard & Mobile Access
+
+The smart home can be monitored and controlled in real time through a **ThingsBoard dashboard**.
+
+The dashboard provides:
+
+* Real-time room temperature monitoring
+* Current curtain position
+* Light state monitoring
+* Light ON/OFF controls
+* Curtain UP/DOWN controls
+* Curtain position adjustment
+
+### Web Dashboard
+
+The ThingsBoard web dashboard provides a centralized interface for monitoring telemetry and controlling the KNX smart-home devices.
+
+![ThingsBoard Web Dashboard](docs/images/thingsboard-web-dashboard.png)
+
+### Mobile Access
+
+The same ThingsBoard dashboard is accessible from a mobile device on the local network, allowing the smart home to be monitored and controlled directly from a phone.
+
+The mobile interface provides access to the same telemetry and RPC controls, including room temperature, curtain state, light state, and device-control commands.
+
+![ThingsBoard Mobile Dashboard](docs/images/thingsboard-mobile-dashboard.png)
+
+Changes made through the web or mobile dashboard are sent through the ThingsBoard IoT Gateway to the KNX network and reflected in KNX Virtual.
+
+Similarly, state changes originating from the KNX environment are reported back through the Gateway and displayed on the ThingsBoard dashboard.
+
+```text
+Web / Mobile Dashboard
+          ↕
+      ThingsBoard
+          ↕
+ThingsBoard IoT Gateway
+          ↕
+     KNX Connector
+          ↕
+      KNX Virtual
+```
+
+---
 
 ## Architecture
 
+The system provides two main interaction interfaces:
+
+1. **ThingsBoard Web/Mobile Dashboard** for direct monitoring and device control.
+2. **AI Assistant** for Persian natural-language interaction.
+
 ```text
-                         ┌──────────────────┐
-                         │       User       │
-                         │ Persian Commands │
-                         └────────┬─────────┘
-                                  │
-                                  ▼
-                         ┌──────────────────┐
-                         │      Ollama      │
-                         │     qwen3:4b     │
-                         └────────┬─────────┘
-                                  │ MCP
-                                  ▼
-                         ┌──────────────────┐
-                         │    MCP Server    │
-                         │    TypeScript    │
-                         └────────┬─────────┘
-                                  │ REST / RPC
-                                  ▼
-                         ┌──────────────────┐
-                         │   ThingsBoard    │
-                         │                  │
-                         │ Telemetry / RPC  │
-                         │ Dashboard        │
-                         └────────▲─────────┘
-                                  │ MQTT
-                                  │
-                         ┌────────┴─────────┐
-                         │ ThingsBoard IoT  │
-                         │     Gateway      │
-                         │                  │
-                         │  KNX Connector   │
-                         │ Custom Converter │
-                         │   Python venv    │
-                         └────────┬─────────┘
-                                  │ KNXnet/IP
-                                  ▼
-                         ┌──────────────────┐
-                         │   KNX Virtual    │
-                         │                  │
-                         │ Light            │
-                         │ Blind            │
-                         │ Temperature      │
-                         └──────────────────┘
+          ┌───────────────────┐
+          │ ThingsBoard Web / │
+          │ Mobile Dashboard  │
+          └─────────┬─────────┘
+                    │
+                    ▼
+          ┌───────────────────┐
+          │    ThingsBoard    │◄──────────────┐
+          │ Telemetry / RPC   │               │
+          └─────────┬─────────┘               │
+                    │                         │ REST / RPC
+                    │ MQTT                    │
+                    ▼                         │
+          ┌───────────────────┐       ┌───────┴───────┐
+          │ ThingsBoard IoT   │       │  MCP Server   │
+          │ Gateway           │       │  TypeScript   │
+          │                   │       └───────▲───────┘
+          │ KNX Connector     │               │ MCP
+          │ Custom Converter  │       ┌───────┴───────┐
+          └─────────┬─────────┘       │    Ollama     │
+                    │                 │   qwen3:4b    │
+                    │ KNXnet/IP       └───────▲───────┘
+                    ▼                         │
+          ┌───────────────────┐       ┌───────┴───────┐
+          │    KNX Virtual    │       │     User      │
+          │                   │       │ Persian Input │
+          │ • Light           │       └───────────────┘
+          │ • Curtain         │
+          │ • Temperature     │
+          └───────────────────┘
 ```
+
+---
 
 ## KNX Configuration
 
 The KNX network is simulated using **KNX Virtual** and configured through **ETS6**.
 
-The ETS6 and KNX Virtual project files used for the implementation are included in this repository under:
+The ETS6 and KNX Virtual files used for the implementation are included in this repository:
 
 ```text
 knx/
@@ -85,17 +128,17 @@ These files can be used to reproduce the KNX configuration and simulated smart-h
 
 ### KNX Group Addresses
 
-The ThingsBoard IoT Gateway maps the KNX Group Addresses to ThingsBoard telemetry and RPC operations.
+The ThingsBoard IoT Gateway maps KNX Group Addresses to ThingsBoard telemetry and RPC operations.
 
-#### Telemetry
+### Telemetry
 
 | Value            | Group Address | DPT     |
 | ---------------- | ------------- | ------- |
 | Room Temperature | `0/0/7`       | `9.001` |
 | Light State      | `0/0/2`       | `1.001` |
-| Blind Position   | `0/0/5`       | `5.001` |
+| Curtain Position | `0/0/5`       | `5.001` |
 
-#### RPC Commands
+### RPC Commands
 
 | Method      | Group Address | DPT     |
 | ----------- | ------------- | ------- |
@@ -109,25 +152,29 @@ The complete ThingsBoard KNX mapping is available in:
 gateway/config/myKnxGateway.json
 ```
 
-# Custom ThingsBoard Gateway Modification
+---
 
-The project uses the official **ThingsBoard IoT Gateway**, but the KNX connector required a modification to its uplink converter for this implementation.
+## Custom ThingsBoard Gateway Modification
 
-In the local Python virtual environment, the modified Gateway file is located at:
+This project uses the official **ThingsBoard IoT Gateway**, but the KNX uplink converter was modified to support the behavior required by our implementation.
+
+In the Windows Python virtual environment used during development, the original installed file was located at:
 
 ```text
 .venv/Lib/site-packages/thingsboard_gateway/connectors/knx/knx_uplink_converter.py
 ```
 
-> On Linux/macOS, the equivalent `site-packages` path may differ from the Windows path shown above.
-
-The modified version used by this project is included in this repository at:
+The modified version used by this project is included in this repository:
 
 ```text
 gateway/patches/knx_uplink_converter.py
 ```
 
-Therefore, reproducing this project requires using the provided modified converter instead of the default converter installed with ThingsBoard IoT Gateway.
+When reproducing the project, the default `knx_uplink_converter.py` installed with the ThingsBoard IoT Gateway must be replaced with the modified version provided here.
+
+> The exact `site-packages` path may differ depending on the operating system and Python installation.
+
+---
 
 ## Project Structure
 
@@ -155,37 +202,54 @@ Therefore, reproducing this project requires using the provided modified convert
 │   │   └── <ETS6_PROJECT_FILE>
 │   │
 │   └── knx-virtual/
-│       └── <KNX_VIRTUAL_PROJECT_FILE>
+│       └── <KNX_VIRTUAL_FILES>
 │
 ├── docs/
+│   ├── images/
+│   │   ├── thingsboard-web-dashboard.png
+│   │   └── thingsboard-mobile-dashboard.png
+│   │
 │   └── project-report.pdf
 │
 ├── .gitignore
 └── README.md
 ```
 
-> The complete ThingsBoard IoT Gateway source code and its Python virtual environment are not included in this repository. The official Gateway is cloned separately and the project-specific configurations and modified KNX converter provided here are applied to it.
+> The complete ThingsBoard IoT Gateway source code and its Python virtual environment are not included in this repository. The official Gateway is cloned separately, and the project-specific configurations and modified KNX converter provided here are then applied to it.
+
+---
 
 # Running the Project
 
-The system consists of several components. Configure and start them in the following order.
+The complete system consists of several components. They should be configured and started in the following order:
+
+```text
+1. KNX Virtual
+2. ETS6 / KNX configuration
+3. ThingsBoard
+4. ThingsBoard IoT Gateway
+5. KNX Connector
+6. ThingsBoard Dashboard
+7. Ollama
+8. MCP Server / AI Agent
+```
 
 ## 1. Set Up KNX Virtual
 
 Install and launch **KNX Virtual**.
 
-The KNX Virtual configuration used for this project is included under:
+The KNX Virtual files used for this project are included under:
 
 ```text
 knx/knx-virtual/
 ```
 
-Load the provided project/configuration where applicable to reproduce the simulated environment.
+Load the provided files where applicable to reproduce the simulated environment.
 
 The simulated smart home contains:
 
 * Light
-* Motorized blind
+* Motorized curtain
 * Temperature sensor
 
 The main KNX Group Addresses are:
@@ -194,12 +258,14 @@ The main KNX Group Addresses are:
 0/0/1   Light command
 0/0/2   Light state
 
-0/0/3   Blind movement
-0/0/4   Blind stop
-0/0/5   Blind position
+0/0/3   Curtain movement
+0/0/4   Curtain stop
+0/0/5   Curtain position
 
 0/0/7   Room temperature
 ```
+
+---
 
 ## 2. Load the ETS6 Project
 
@@ -211,13 +277,13 @@ The ETS6 project used for this implementation is provided under:
 knx/ets6/
 ```
 
-Import/open the provided ETS6 project and connect ETS to KNX Virtual through its KNXnet/IP interface.
+Import/open the provided project and connect ETS6 to KNX Virtual through its KNXnet/IP interface.
 
-The included project contains the KNX configuration and Group Addresses used by the ThingsBoard Gateway.
-
-Use the ETS Group Monitor to verify communication before proceeding.
+Use the **ETS Group Monitor** to verify communication before proceeding.
 
 You should be able to control the simulated devices and observe their state changes from ETS.
+
+---
 
 ## 3. Start ThingsBoard
 
@@ -225,20 +291,24 @@ Start a **ThingsBoard Community Edition** instance.
 
 Create a Gateway device in ThingsBoard and obtain its access token.
 
-The project configuration expects the ThingsBoard MQTT service to be reachable at:
+The project configuration used during development expects the ThingsBoard MQTT service at:
 
 ```text
 Host: 127.0.0.1
 Port: 1883
 ```
 
-If ThingsBoard is running on another machine or container, update the corresponding Gateway configuration.
+If ThingsBoard is running on another machine or container, update the Gateway configuration accordingly.
+
+---
 
 # ThingsBoard IoT Gateway Setup
 
-The ThingsBoard IoT Gateway is run locally from the official ThingsBoard source inside an isolated Python virtual environment.
+The ThingsBoard IoT Gateway used in this project was run locally from the official ThingsBoard Gateway source inside an isolated **Python virtual environment**.
 
-## 4. Clone ThingsBoard IoT Gateway
+The full Gateway source and `.venv` are not stored in this repository.
+
+## 4. Clone the ThingsBoard IoT Gateway
 
 Clone the official ThingsBoard IoT Gateway repository:
 
@@ -247,23 +317,27 @@ git clone https://github.com/thingsboard/thingsboard-gateway.git
 cd thingsboard-gateway
 ```
 
+---
+
 ## 5. Create a Python Virtual Environment
 
-On Windows:
+### Windows
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-On Linux/macOS:
+### Linux/macOS
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-## 6. Install ThingsBoard IoT Gateway
+---
+
+## 6. Install the ThingsBoard IoT Gateway
 
 With the virtual environment activated:
 
@@ -273,25 +347,25 @@ pip install -e .
 
 The Gateway and its Python dependencies will be installed inside the virtual environment.
 
+---
+
 ## 7. Apply the Custom KNX Uplink Converter
 
-This step is **required** for reproducing the implementation used in this project.
+**This step is required to reproduce the implementation used in this project.**
 
-The repository contains our modified KNX uplink converter at:
+The modified converter is provided at:
 
 ```text
 gateway/patches/knx_uplink_converter.py
 ```
 
-After installing ThingsBoard IoT Gateway, replace the installed:
+After installing the ThingsBoard IoT Gateway, locate its installed KNX converter:
 
 ```text
 thingsboard_gateway/connectors/knx/knx_uplink_converter.py
 ```
 
-with the provided modified version.
-
-For example, in the Windows virtual environment used during development, the installed file was located at:
+In the Windows environment used during development, it was located at:
 
 ```text
 .venv/Lib/site-packages/thingsboard_gateway/connectors/knx/knx_uplink_converter.py
@@ -303,9 +377,33 @@ Replace that file with:
 gateway/patches/knx_uplink_converter.py
 ```
 
-The exact `site-packages` location can vary depending on the operating system and Python installation.
+Conceptually:
+
+```text
+Repository
+gateway/patches/knx_uplink_converter.py
+                │
+                │ replace
+                ▼
+Python venv
+.venv/Lib/site-packages/
+└── thingsboard_gateway/
+    └── connectors/
+        └── knx/
+            └── knx_uplink_converter.py
+```
+
+The exact `site-packages` location may vary depending on the operating system and Python installation.
+
+---
 
 ## 8. Add the Gateway Configuration
+
+The project-specific Gateway configuration is available under:
+
+```text
+gateway/config/
+```
 
 Copy:
 
@@ -323,17 +421,11 @@ gateway/config/tb_gateway.example.json
 
 and provide the access token of the Gateway device created in ThingsBoard.
 
-A local installation will therefore contain the equivalent of:
+The resulting local installation should contain the equivalent of:
 
 ```text
 thingsboard-gateway/
 ├── .venv/
-│   └── Lib/
-│       └── site-packages/
-│           └── thingsboard_gateway/
-│               └── connectors/
-│                   └── knx/
-│                       └── knx_uplink_converter.py
 │
 ├── config/
 │   ├── tb_gateway.json
@@ -342,7 +434,9 @@ thingsboard-gateway/
 └── ...
 ```
 
-The `.venv` directory itself should **not** be committed to GitHub.
+Do not commit the local `.venv` or credential-containing `tb_gateway.json` to GitHub.
+
+---
 
 ## 9. Configure the KNX Connection
 
@@ -360,17 +454,21 @@ The project uses the standard KNXnet/IP port:
 3671
 ```
 
-If KNX Virtual and the Gateway are running in different environments, update the IP address so that the Gateway can reach the KNX Virtual interface.
+If KNX Virtual and the Gateway are running in different environments, update the configured IP address so the Gateway can reach the KNX Virtual interface.
+
+---
 
 ## 10. Start the ThingsBoard IoT Gateway
 
-Activate the Python virtual environment:
+Activate the virtual environment.
+
+### Windows
 
 ```powershell
 .venv\Scripts\activate
 ```
 
-or on Linux/macOS:
+### Linux/macOS
 
 ```bash
 source .venv/bin/activate
@@ -378,15 +476,17 @@ source .venv/bin/activate
 
 Then start the installed ThingsBoard IoT Gateway.
 
-Verify from the logs that both the ThingsBoard connection and KNX connector have successfully started.
+Verify from the Gateway logs that both the ThingsBoard connection and KNX connector have successfully started.
 
 Once connected, KNX telemetry should begin appearing in ThingsBoard.
+
+---
 
 ## 11. Verify Telemetry
 
 Open the KNX smart-home device in ThingsBoard.
 
-The following telemetry should be available:
+The following telemetry values should become available:
 
 ```text
 roomTemperature
@@ -410,37 +510,51 @@ Custom Uplink Converter
 ThingsBoard IoT Gateway
      ↓
 ThingsBoard Telemetry
+     ↓
+Web / Mobile Dashboard
 ```
 
-## 12. Verify RPC Control
+---
 
-Send the `setLight` RPC command from ThingsBoard.
+## 12. Verify Device Control
 
-For example:
+The dashboard provides controls for the simulated KNX devices.
+
+For example, sending:
 
 ```text
 setLight → true
 ```
 
-should turn the simulated KNX light on.
+should turn the simulated light on.
 
-The complete control path is:
+The control path is:
 
 ```text
-ThingsBoard
-     ↓
+Web / Mobile Dashboard
+          ↓
+      ThingsBoard
+          ↓
+ThingsBoard RPC
+          ↓
 ThingsBoard IoT Gateway
-     ↓
-KNX Connector
-     ↓
-KNXnet/IP
-     ↓
-KNX Virtual
-     ↓
-Light
+          ↓
+     KNX Connector
+          ↓
+       KNXnet/IP
+          ↓
+      KNX Virtual
+          ↓
+         Light
 ```
 
-# AI Assistant Setup
+This verifies bidirectional communication between ThingsBoard and the simulated KNX smart home.
+
+---
+
+# AI Assistant
+
+The project also extends the smart-home system with a local AI assistant.
 
 The AI component is located under:
 
@@ -453,11 +567,59 @@ It consists of:
 * TypeScript MCP server
 * ThingsBoard REST/RPC integration
 * Ollama-based AI agent
-* MCP tools for reading and controlling the smart home
+* MCP tools for monitoring and controlling the smart home
+
+The AI layer does not replace the ThingsBoard dashboard. It provides an additional natural-language interface over the same smart-home infrastructure.
+
+---
+
+## MCP Tools
+
+### `get_home_status`
+
+Reads the latest ThingsBoard telemetry, including:
+
+```text
+roomTemperature
+lightState
+blindPosition
+```
+
+This allows the user to ask questions such as:
+
+```text
+دمای خونه الان چنده؟
+```
+
+or:
+
+```text
+چراغ روشنه؟
+```
+
+### `set_light`
+
+Sends a ThingsBoard RPC command to control the KNX light.
+
+This allows commands such as:
+
+```text
+چراغ رو روشن کن
+```
+
+and:
+
+```text
+چراغ رو خاموش کن
+```
+
+---
+
+# AI Assistant Setup
 
 ## 13. Install Ollama
 
-Install and start Ollama.
+Install and start **Ollama**.
 
 Pull the model used by the project:
 
@@ -465,11 +627,13 @@ Pull the model used by the project:
 ollama pull qwen3:4b
 ```
 
-Verify that it is available:
+Verify that the model is available:
 
 ```bash
 ollama run qwen3:4b
 ```
+
+---
 
 ## 14. Install AI Dependencies
 
@@ -479,15 +643,19 @@ Navigate to:
 cd ai-home-mcp
 ```
 
-and install the dependencies:
+Install the project dependencies:
 
 ```bash
 yarn install
 ```
 
+---
+
 ## 15. Configure ThingsBoard Access
 
-The MCP component requires:
+The MCP component requires access to the ThingsBoard REST API and the smart-home device.
+
+Provide the following values in your local runtime environment:
 
 ```text
 THINGSBOARD_URL
@@ -496,7 +664,7 @@ THINGSBOARD_PASSWORD
 THINGSBOARD_DEVICE_ID
 ```
 
-For example:
+Example:
 
 ```text
 THINGSBOARD_URL=http://localhost:8080
@@ -507,6 +675,8 @@ THINGSBOARD_DEVICE_ID=<your smart-home device ID>
 
 Do not commit real ThingsBoard credentials or access tokens to GitHub.
 
+---
+
 ## 16. Run the MCP Server
 
 To run the MCP server directly:
@@ -515,33 +685,27 @@ To run the MCP server directly:
 yarn dev
 ```
 
-The implemented MCP tools include:
+The MCP server exposes the implemented smart-home tools to compatible MCP clients.
 
-### `get_home_status`
-
-Reads the latest ThingsBoard telemetry:
-
-```text
-roomTemperature
-lightState
-blindPosition
-```
-
-### `set_light`
-
-Sends a ThingsBoard RPC command to control the KNX light.
+---
 
 ## 17. Run the AI Agent
 
-Start the interactive assistant:
+Start the interactive AI assistant:
 
 ```bash
 yarn agent
 ```
 
-The agent uses the local `qwen3:4b` model through Ollama and connects it to the smart-home MCP tools.
+The agent uses the local:
 
-Example Persian commands:
+```text
+qwen3:4b
+```
+
+model through Ollama and connects it to the MCP smart-home tools.
+
+Example Persian interactions:
 
 ```text
 دمای خونه الان چنده؟
@@ -559,7 +723,7 @@ Example Persian commands:
 چراغ رو خاموش کن
 ```
 
-For a telemetry query:
+### Telemetry Query Flow
 
 ```text
 User
@@ -570,14 +734,14 @@ MCP get_home_status
   ↓
 ThingsBoard REST API
   ↓
-Telemetry
+Latest Telemetry
   ↓
 Ollama
   ↓
-User
+Persian Response
 ```
 
-For a device-control command:
+### AI Device Control Flow
 
 ```text
 User
@@ -597,7 +761,9 @@ KNX Virtual
 Light
 ```
 
-# Technologies
+---
+
+## Technologies
 
 * KNX
 * KNX Virtual
@@ -611,9 +777,13 @@ Light
 * Ollama
 * Qwen3 4B
 
-# Security
+---
 
-Do not commit generated environments, dependencies, logs, or credentials such as:
+## Security
+
+Generated environments, dependencies, logs, and files containing credentials should not be committed.
+
+The repository should exclude:
 
 ```text
 .env
@@ -625,15 +795,47 @@ tb_gateway.json
 
 Never commit ThingsBoard access tokens, usernames, or passwords to a public repository.
 
-# Project Report
+A suitable `.gitignore` includes:
 
-The complete coursework report, including the architecture, KNX/ETS configuration, ThingsBoard dashboards, AI integration, implementation details, and results, is available under:
+```gitignore
+# Environment variables
+.env
+.env.*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Local ThingsBoard configuration containing credentials
+gateway/config/tb_gateway.json
+
+# OS
+.DS_Store
+Thumbs.db
+```
+
+---
+
+## Project Report
+
+The complete coursework report, including the implemented architecture, KNX/ETS configuration, ThingsBoard dashboards, AI integration, implementation details, and results, is available at:
 
 ```text
 docs/project-report.pdf
 ```
 
-# Authors
+---
+
+## Authors
 
 This project was developed collaboratively by:
 
