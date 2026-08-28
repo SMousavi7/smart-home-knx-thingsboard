@@ -22,6 +22,17 @@ The project implements a simulated KNX smart home, connects it to ThingsBoard th
 * Local Ollama LLM
 * Persian natural-language interaction
 * AI-based light control and home-status queries
+---
+
+## KNX Virtual & ETS Integration
+
+A demonstration of the simulated KNX environment and its connection to ETS6:
+
+
+https://github.com/user-attachments/assets/d903f9c8-4b10-48e5-bfc9-d2cae6199f56
+
+
+> **Note:** If the video does not play inline directly in your browser, you can access and download the raw recording [here](https://github.com/SMousavi7/smart-home-knx-thingsboard/blob/main/KNX/20260828_071514.mp4).
 
 ---
 
