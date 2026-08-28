@@ -130,9 +130,8 @@ The KNX network is simulated using **KNX Virtual** and configured through **ETS6
 The ETS6 and KNX Virtual files used for the implementation are included in this repository:
 
 ```text
-knx/
-├── ets6/
-└── knx-virtual/
+KNX/
+└── IoT Project.knxproj
 ```
 
 These files can be used to reproduce the KNX configuration and simulated smart-home environment used in the project.
