@@ -207,12 +207,8 @@ When reproducing the project, the default `knx_uplink_converter.py` installed wi
 │   └── patches/
 │       └── knx_uplink_converter.py
 │
-├── knx/
-│   ├── ets6/
-│   │   └── <ETS6_PROJECT_FILE>
-│   │
-│   └── knx-virtual/
-│       └── <KNX_VIRTUAL_FILES>
+├── KNX/
+│   └── IoT Project.knxproj
 │
 ├── docs/
 │   ├── images/
@@ -243,24 +239,19 @@ The complete system consists of several components. They should be configured an
 7. Ollama
 8. MCP Server / AI Agent
 ```
+---
 
-## 1. Set Up KNX Virtual
+## 1. Load the ETS6 Project
 
-Install and launch **KNX Virtual**.
+Open **ETS6**.
 
-The KNX Virtual files used for this project are included under:
+The ETS6 project used for this implementation is provided under:
 
 ```text
-knx/knx-virtual/
+KNX/IoT Project.knxproj
 ```
 
-Load the provided files where applicable to reproduce the simulated environment.
-
-The simulated smart home contains:
-
-* Light
-* Motorized curtain
-* Temperature sensor
+Import/open the provided project and connect ETS6 to KNX Virtual through its KNXnet/IP interface.
 
 The main KNX Group Addresses are:
 
@@ -274,22 +265,33 @@ The main KNX Group Addresses are:
 
 0/0/7   Room temperature
 ```
-
 ---
 
-## 2. Load the ETS6 Project
+## 2. Set Up KNX Virtual
 
-Open **ETS6**.
+Install and launch **KNX Virtual**.
 
-The ETS6 project used for this implementation is provided under:
+Load the provided files to reproduce the simulated environment. To program and commission each device in the simulation, follow these steps:
 
-```text
-knx/ets6/
-```
+1. **Configure Interface & Initiate Download:**
+   - In **ETS6**, ensure **KNX Virtual** is selected as the active bus communication interface.
+   - Open the **Buildings** panel and locate the target device.
+   - Right-click the device, select **Download**, and choose **Download All**.
 
-Import/open the provided project and connect ETS6 to KNX Virtual through its KNXnet/IP interface.
+2. **Trigger Programming in KNX Virtual:**
+   - In **KNX Virtual**, navigate to **Installation > Configuration**.
+   - Click the corresponding device (matching the individual address / ID selected in ETS6) to put it into programming mode.
+   - The download progress will start in ETS6. Wait for the operation to complete.
 
-Use the **ETS Group Monitor** to verify communication before proceeding.
+Repeat this process for all simulated devices in the project to finish commissioning.
+
+The simulated smart home contains:
+
+* Light
+* Motorized curtain
+* Temperature sensor
+
+In ETS6 use the **ETS Group Monitor** to verify communication before proceeding.
 
 You should be able to control the simulated devices and observe their state changes from ETS.
 
