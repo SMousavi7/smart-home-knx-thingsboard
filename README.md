@@ -28,9 +28,7 @@ The project implements a simulated KNX smart home, connects it to ThingsBoard th
 
 A demonstration of the simulated KNX environment and its connection to ETS6:
 
-
-https://github.com/user-attachments/assets/d903f9c8-4b10-48e5-bfc9-d2cae6199f56
-
+https://github.com/user-attachments/assets/4822b599-3d9c-4b97-a791-788f7e054435
 
 > **Note:** If the video does not play inline directly in your browser, you can access and download the raw recording [here](https://github.com/SMousavi7/smart-home-knx-thingsboard/blob/main/KNX/20260828_071514.mp4).
 
@@ -230,8 +228,8 @@ When reproducing the project, the default `knx_uplink_converter.py` installed wi
 The complete system consists of several components. They should be configured and started in the following order:
 
 ```text
-1. KNX Virtual
-2. ETS6 / KNX configuration
+1. Load the ETS6 Project
+2. Set Up KNX Virtual
 3. ThingsBoard
 4. ThingsBoard IoT Gateway
 5. KNX Connector
@@ -291,7 +289,7 @@ The simulated smart home contains:
 * Motorized curtain
 * Temperature sensor
 
-In ETS6 use the **ETS Group Monitor** to verify communication before proceeding.
+In ETS6 open the **ETS Group Monitor** to verify communication before proceeding.
 
 You should be able to control the simulated devices and observe their state changes from ETS.
 
